@@ -224,7 +224,7 @@ const ProjectDetails = () => {
                 <form onSubmit={handleAddMember} className="flex gap-2 w-full">
                   <input
                     type="email"
-                    placeholder="Email..."
+                    placeholder="Invite by adding email..."
                     className="flex-1 lg:w-48 bg-gray-800 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500 text-white border border-gray-700 focus:border-transparent"
                     value={memberEmail}
                     onChange={(e) => setMemberEmail(e.target.value)}
