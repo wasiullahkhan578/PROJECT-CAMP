@@ -1,8 +1,11 @@
 import axios from "axios";
 
+// ✅ VITE_BACKEND_URL variable se value uthayega
+const BASE_URL =
+  import.meta.env.VITE_BACKEND_URL || "http://localhost:8000/api/v1";
+
 const api = axios.create({
-  // Agar environment variable hai toh wo use karega, nahi toh localhost (Safe for both)
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1",
+  baseURL: BASE_URL,
   withCredentials: true,
 });
 
