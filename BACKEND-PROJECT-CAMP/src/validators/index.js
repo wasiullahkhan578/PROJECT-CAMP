@@ -33,7 +33,7 @@ const userChangeCurrentPasswordValidator = () => {
     body("oldPassword").notEmpty().withMessage("old password is required"),
     body("newPassword").notEmpty().withMessage("new password is required"),
   ];
-}
+};
 
 const userForgotPasswordValidator = () => {
   return [
@@ -42,16 +42,18 @@ const userForgotPasswordValidator = () => {
       .withMessage("Email is required")
       .isEmail()
       .withMessage("Email is invalid"),
-  ]
-}
+  ];
+};
 
+// ✅ FIX: Changed 'newPassword' to 'password' to match Frontend
 const userResetForgotPasswordValidator = () => {
   return [
-    body("newPassword")
+    body("password") // <--- Yahan change kiya hai
       .notEmpty()
-      .withMessage("Password is required")
-  ]
-}
+      .withMessage("Password is required"),
+  ];
+};
+
 export {
   userRegisterValidator,
   userLoginValidator,

@@ -2,7 +2,11 @@ import { User } from "../models/user.models.js";
 import { ApiResponse } from "../utils/api-response.js";
 import { ApiError } from "../utils/api-error.js";
 import { asyncHandler } from "../utils/async-handler.js";
-import { emailVerificationMailgenContent, sendEmail } from "../utils/mail.js";
+import {
+  emailVerificationMailgenContent,
+  forgotPasswordMailgenContent, // ✅ Added missing import
+  sendEmail,
+} from "../utils/mail.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 
@@ -48,12 +52,16 @@ const registerUser = asyncHandler(async (req, res) => {
 
   await user.save({ validateBeforeSave: false });
 
+  // ✅ UPDATE: Frontend Link (.env se CORS_ORIGIN lega)
+  const frontendUrl = process.env.CORS_ORIGIN || "http://localhost:5173";
+  const verificationUrl = `${frontendUrl}/verify-email/${unHashedToken}`;
+
   await sendEmail({
     email: user?.email,
     subject: "Please verify your email",
     mailgenContent: emailVerificationMailgenContent(
       user.username,
-      `${req.protocol}://${req.get("host")}/api/v1/users/verify-email/${unHashedToken}`,
+      verificationUrl, // Frontend Link
     ),
   });
 
@@ -71,7 +79,7 @@ const registerUser = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         { user: createdUser },
-        "User registered successfully and verification email has been sent on your email.",
+        "User registered successfully. Please check your email to verify.",
       ),
     );
 });
@@ -86,6 +94,14 @@ const login = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email });
   if (!user) {
     throw new ApiError(400, "User does not exist.");
+  }
+
+  // ✅ UPDATE: Verify Check Added
+  if (!user.isEmailVerified) {
+    throw new ApiError(
+      403,
+      "Please verify your email first via the link sent to your inbox.",
+    );
   }
 
   const isPasswordValid = await user.isPasswordCorrect(password);
@@ -155,7 +171,7 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 const verifyEmail = asyncHandler(async (req, res) => {
   const { verificationToken } = req.params;
   if (!verificationToken) {
-    throw new ApiError(400, "Email verifiationn token is missing");
+    throw new ApiError(400, "Email verification token is missing");
   }
   let hashedToken = crypto
     .createHash("sha256")
@@ -168,7 +184,7 @@ const verifyEmail = asyncHandler(async (req, res) => {
   });
 
   if (!user) {
-    throw new ApiError(400, "Token is expired");
+    throw new ApiError(400, "Token is expired or invalid");
   }
 
   user.emailVerificationToken = undefined;
@@ -205,12 +221,16 @@ const resendEmailVerification = asyncHandler(async (req, res) => {
 
   await user.save({ validateBeforeSave: false });
 
+  // ✅ UPDATE: Frontend Link
+  const frontendUrl = process.env.CORS_ORIGIN || "http://localhost:5173";
+  const verificationUrl = `${frontendUrl}/verify-email/${unHashedToken}`;
+
   await sendEmail({
     email: user?.email,
     subject: "Please verify your email",
     mailgenContent: emailVerificationMailgenContent(
       user.username,
-      `${req.protocol}://${req.get("host")}/api/v1/users/verify-email/${unHashedToken}`,
+      verificationUrl,
     ),
   });
   return res
@@ -272,20 +292,25 @@ const forgotPasswordRequest = asyncHandler(async (req, res) => {
     throw new ApiError(404, "user does not exist");
   }
 
+  // ✅ FIX: Added () brackets to function call (Syntax Error Fixed)
   const { unHashedToken, hashedToken, tokenExpiry } =
-    user.generateTemporaryToken;
+    user.generateTemporaryToken();
 
   user.forgotPasswordToken = hashedToken;
   user.forgotPasswordExpiry = tokenExpiry;
 
   await user.save({ validateBeforeSave: false });
 
+  // ✅ UPDATE: Frontend Reset Link
+  const frontendUrl = process.env.CORS_ORIGIN || "http://localhost:5173";
+  const resetUrl = `${frontendUrl}/reset-password/${unHashedToken}`;
+
   await sendEmail({
     email: user?.email,
     subject: "Password reset request",
     mailgenContent: forgotPasswordMailgenContent(
       user.username,
-      `${process.env.FORGOT_PASSWORD_REDIRECT_URL}/${unHashedToken}`,
+      resetUrl, // Frontend URL
     ),
   });
 
@@ -302,7 +327,7 @@ const forgotPasswordRequest = asyncHandler(async (req, res) => {
 
 const resetForgotPassword = asyncHandler(async (req, res) => {
   const { resetToken } = req.params;
-  const { newPassword } = req.body;
+  const { password } = req.body; // ✅ Matched with Frontend (was newPassword)
 
   let hashedToken = crypto
     .createHash("sha256")
@@ -314,13 +339,13 @@ const resetForgotPassword = asyncHandler(async (req, res) => {
     forgotPasswordExpiry: { $gt: Date.now() },
   });
   if (!user) {
-    throw new ApiError(489, "Token is invalid or expired");
+    throw new ApiError(400, "Token is invalid or expired"); // Fixed status code 489 -> 400
   }
 
   user.forgotPasswordExpiry = undefined;
   user.forgotPasswordToken = undefined;
 
-  user.password = newPassword;
+  user.password = password;
   await user.save({ validateBeforeSave: false });
   return res
     .status(200)

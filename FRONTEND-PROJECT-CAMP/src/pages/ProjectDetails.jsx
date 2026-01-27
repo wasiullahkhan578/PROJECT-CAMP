@@ -358,7 +358,7 @@ const ProjectDetails = () => {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               className="w-full h-64 md:h-80 p-4 md:p-6 bg-gray-950 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-xs md:text-sm leading-relaxed text-white border border-gray-800"
-              placeholder="Write your camp notes here..."
+              placeholder="Write your project notes here..."
             />
           ) : (
             <div className="bg-gray-950/50 p-6 md:p-8 rounded-2xl border border-dashed border-gray-800">

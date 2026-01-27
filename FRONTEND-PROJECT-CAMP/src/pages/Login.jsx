@@ -8,7 +8,6 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
-  // Removed useTheme hook
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -65,9 +64,19 @@ const Login = () => {
           </div>
 
           <div>
-            <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">
-              Password
-            </label>
+            {/* ✅ UPDATED: Label + Forgot Password Link */}
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                Password
+              </label>
+              <Link
+                to="/forgot-password"
+                className="text-[11px] font-bold text-indigo-400 hover:text-indigo-300 transition-colors"
+              >
+                Forgot Password?
+              </Link>
+            </div>
+
             <input
               type="password"
               required

@@ -99,7 +99,7 @@ const Dashboard = () => {
                 onClick={() => setIsModalOpen(true)}
                 className="bg-indigo-600 text-white px-3 md:px-5 py-1.5 md:py-2.5 rounded-lg md:rounded-xl font-bold hover:bg-indigo-500 transition text-xs md:text-sm"
               >
-                + New
+                + New Project
               </button>
               <button
                 onClick={logout}
@@ -182,7 +182,7 @@ const Dashboard = () => {
                   📁
                 </span>
                 <p className="text-sm md:text-base text-gray-500 font-bold group-hover:text-gray-300 transition-colors">
-                  Create your first camp
+                  Create your first project
                 </p>
               </div>
             )}
@@ -206,7 +206,7 @@ const Dashboard = () => {
               className="bg-gray-900 rounded-t-4xl sm:rounded-[3rem] p-6 md:p-10 max-w-md w-full border border-gray-800 shadow-2xl"
             >
               <h2 className="text-2xl md:text-3xl font-black mb-6 md:mb-8 tracking-tight text-white">
-                New Camp.
+                New Project.
               </h2>
               <form
                 onSubmit={handleCreateProject}
@@ -214,7 +214,7 @@ const Dashboard = () => {
               >
                 <div>
                   <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1.5 md:mb-2">
-                    Camp Name
+                    Project Name
                   </label>
                   <input
                     type="text"
