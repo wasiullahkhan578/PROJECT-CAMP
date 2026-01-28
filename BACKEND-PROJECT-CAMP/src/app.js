@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
+
 import authRouter from "./routes/auth.routes.js";
 import projectRouter from "./routes/project.routes.js";
 import taskRouter from "./routes/task.routes.js";
@@ -18,7 +19,7 @@ app.use(cookieParser());
 //cors configuration
 app.use(
   cors({
-    origin: "https://project-camp-frontend.vercel.app",
+    origin: process.env.CORS_ORIGIN?.split(",") || "http://localhost:5173",
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Authorization", "Content-Type"],
