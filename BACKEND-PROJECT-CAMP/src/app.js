@@ -19,7 +19,8 @@ app.use(cookieParser());
 //cors configuration
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN?.split(",") || "http://localhost:5173",
+    // ✅ Seedha apna Frontend URL string mein likhein (Debugging ke liye best)
+    origin: "https://project-camp-frontend.vercel.app",
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Authorization", "Content-Type"],
